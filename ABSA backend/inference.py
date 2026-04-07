@@ -3,10 +3,11 @@ inference.py
 ------------
 Baseline inference script for the ABSA environment.
 
-Mandatory environment variables:
-    API_BASE_URL   LLM API endpoint (e.g. https://router.huggingface.co/v1)
-    MODEL_NAME     Model identifier
-    HF_TOKEN       Hugging Face / API key
+Environment variables:
+    API_BASE_URL        LLM API endpoint (default: https://router.huggingface.co/v1)
+    MODEL_NAME          Model identifier (default: meta-llama/Llama-3.3-70B-Instruct)
+    HF_TOKEN            Hugging Face / API key (required, no default)
+    LOCAL_IMAGE_NAME    Docker image name (optional, for from_docker_image())
 
 Usage:
     python inference.py
@@ -20,10 +21,12 @@ import httpx
 from openai import OpenAI
 
 # ── Config ────────────────────────────────────────────────────────────────────
-API_BASE_URL = os.getenv("API_BASE_URL") or "https://router.huggingface.co/v1"
-API_KEY      = os.getenv("HF_TOKEN") or os.getenv("API_KEY", "")
-MODEL_NAME   = os.getenv("MODEL_NAME", "meta-llama/Llama-3.3-70B-Instruct")
-ENV_BASE_URL = os.getenv("ENV_BASE_URL", "http://localhost:7860")
+API_BASE_URL     = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
+MODEL_NAME       = os.getenv("MODEL_NAME", "meta-llama/Llama-3.3-70B-Instruct")
+HF_TOKEN         = os.getenv("HF_TOKEN")
+ENV_BASE_URL     = os.getenv("ENV_BASE_URL", "http://localhost:7860")
+# Optional: used when launching the environment via from_docker_image()
+LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
 
 TASKS        = ["screen_time_reducer", "habit_streak_builder", "full_absa"]
 TEMPERATURE  = 0.2
@@ -92,14 +95,13 @@ def parse_action(text: str) -> str:
 # ── Main loop ─────────────────────────────────────────────────────────────────
 
 def run_task(client: OpenAI, task_id: str) -> float:
-    print(f"\n{'='*50}")
-    print(f"Task: {task_id}")
-    print('='*50)
-
+    # ── START ──
     data = env_post("/reset", {"task_id": task_id, "personality": "balanced", "seed": 42})
     obs         = data["observation"]
     initial_obs = obs.copy()
     max_steps   = data["max_steps"]
+
+    print(json.dumps({"type": "START", "task_id": task_id, "max_steps": max_steps, "observation": obs}))
 
     cumulative_reward = 0.0
     step_count = 0
@@ -119,24 +121,32 @@ def run_task(client: OpenAI, task_id: str) -> float:
             )
             raw = completion.choices[0].message.content or ""
         except Exception as exc:
-            print(f"  [Step {step}] LLM error: {exc}. Using noop.")
             raw = FALLBACK_ACTION
 
         action = parse_action(raw)
-        print(f"  Step {step:2d}: {action:<22} ", end="")
 
         result = env_post("/step", {"action_type": action})
         obs    = result["observation"]
         reward = result["reward"]["total"]
         done   = result["done"]
+        info   = result["info"]
 
         cumulative_reward += reward
         step_count += 1
 
-        print(f"reward={reward:+.1f}  frustration={obs['frustration']:.2f}  streak={obs['habit_streak']}")
+        # ── STEP ──
+        print(json.dumps({
+            "type": "STEP",
+            "step": step,
+            "action": action,
+            "observation": obs,
+            "reward": reward,
+            "cumulative_reward": round(cumulative_reward, 4),
+            "done": done,
+            "info": info,
+        }))
 
         if done:
-            print(f"  Episode done at step {step}.")
             break
 
     # Grade the episode
@@ -149,25 +159,36 @@ def run_task(client: OpenAI, task_id: str) -> float:
     })
 
     score = grade_result["score"]
-    print(f"\n  Cumulative reward : {cumulative_reward:+.2f}")
-    print(f"  Final score       : {score:.4f}  (0.0 – 1.0)")
+
+    # ── END ──
+    print(json.dumps({
+        "type": "END",
+        "task_id": task_id,
+        "score": score,
+        "cumulative_reward": round(cumulative_reward, 4),
+        "step_count": step_count,
+    }))
+
     return score
 
 
 def main():
-    client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
+    if not HF_TOKEN:
+        raise RuntimeError("HF_TOKEN environment variable is required but not set.")
+
+    client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
 
     scores = {}
     for task_id in TASKS:
         scores[task_id] = run_task(client, task_id)
 
-    print(f"\n{'='*50}")
-    print("BASELINE RESULTS")
-    print('='*50)
-    for task_id, score in scores.items():
-        print(f"  {task_id:<28} {score:.4f}")
+    # Final summary (structured)
     avg = sum(scores.values()) / len(scores)
-    print(f"  {'AVERAGE':<28} {avg:.4f}")
+    print(json.dumps({
+        "type": "SUMMARY",
+        "scores": {tid: round(s, 4) for tid, s in scores.items()},
+        "average": round(avg, 4),
+    }))
 
 
 if __name__ == "__main__":
