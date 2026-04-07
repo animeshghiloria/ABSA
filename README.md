@@ -439,6 +439,4 @@ The script:
 
 ---
 
-<p align="center">
-  Built with ❤️ by <strong>Animesh Ghiloria</strong>
-</p>
+
