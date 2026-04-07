@@ -1,14 +1,4 @@
-# ── Stage 1: Build React frontend ─────────────────────────────────────────────
-FROM node:20-slim AS frontend-build
-
-WORKDIR /app/frontend
-COPY frontend/package*.json ./
-RUN npm ci --silent
-COPY frontend/ .
-RUN npm run build
-
-
-# ── Stage 2: Python backend ────────────────────────────────────────────────────
+# ── ABSA Backend — Hugging Face Spaces Docker ──────────────────────────────────
 FROM python:3.11-slim
 
 WORKDIR /app
@@ -28,9 +18,6 @@ COPY tasks/     ./tasks/
 COPY server.py  .
 COPY inference.py .
 COPY openenv.yaml .
-
-# Copy built React app from Stage 1
-COPY --from=frontend-build /app/frontend/dist ./frontend/dist
 
 # HF Spaces uses port 7860
 EXPOSE 7860
