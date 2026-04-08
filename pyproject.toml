@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adaptive-behavior-shaping-agent"
+version = "1.0.0"
+description = "RL environment where an agent reduces digital addiction and builds sustainable health habits by interacting with a simulated human user."
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+
+dependencies = [
+    "fastapi==0.115.0",
+    "uvicorn[standard]==0.30.6",
+    "pydantic==2.7.4",
+    "openai==1.40.0",
+    "numpy==1.26.4",
+    "pillow==10.4.0",
+    "pyyaml==6.0.2",
+    "httpx==0.27.0",
+]
+
+[project.scripts]
+absa-server = "server:app"
