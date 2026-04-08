@@ -14,7 +14,6 @@ Usage:
 """
 
 import os
-import json
 import textwrap
 
 import httpx
@@ -95,13 +94,14 @@ def parse_action(text: str) -> str:
 # ── Main loop ─────────────────────────────────────────────────────────────────
 
 def run_task(client: OpenAI, task_id: str) -> float:
-    # ── START ──
+    # ── Reset environment ──
     data = env_post("/reset", {"task_id": task_id, "personality": "balanced", "seed": 42})
     obs         = data["observation"]
     initial_obs = obs.copy()
     max_steps   = data["max_steps"]
 
-    print(json.dumps({"type": "START", "task_id": task_id, "max_steps": max_steps, "observation": obs}))
+    # ── [START] marker (required by OpenEnv validator) ──
+    print(f"[START] task={task_id} max_steps={max_steps}", flush=True)
 
     cumulative_reward = 0.0
     step_count = 0
@@ -134,17 +134,12 @@ def run_task(client: OpenAI, task_id: str) -> float:
         cumulative_reward += reward
         step_count += 1
 
-        # ── STEP ──
-        print(json.dumps({
-            "type": "STEP",
-            "step": step,
-            "action": action,
-            "observation": obs,
-            "reward": reward,
-            "cumulative_reward": round(cumulative_reward, 4),
-            "done": done,
-            "info": info,
-        }))
+        # ── [STEP] marker (required by OpenEnv validator) ──
+        print(
+            f"[STEP] step={step} action={action} reward={reward:.4f} "
+            f"cumulative_reward={cumulative_reward:.4f} done={done}",
+            flush=True,
+        )
 
         if done:
             break
@@ -160,14 +155,12 @@ def run_task(client: OpenAI, task_id: str) -> float:
 
     score = grade_result["score"]
 
-    # ── END ──
-    print(json.dumps({
-        "type": "END",
-        "task_id": task_id,
-        "score": score,
-        "cumulative_reward": round(cumulative_reward, 4),
-        "step_count": step_count,
-    }))
+    # ── [END] marker (required by OpenEnv validator) ──
+    print(
+        f"[END] task={task_id} score={score:.4f} steps={step_count} "
+        f"cumulative_reward={cumulative_reward:.4f}",
+        flush=True,
+    )
 
     return score
 
@@ -182,13 +175,13 @@ def main():
     for task_id in TASKS:
         scores[task_id] = run_task(client, task_id)
 
-    # Final summary (structured)
+    # Final summary
     avg = sum(scores.values()) / len(scores)
-    print(json.dumps({
-        "type": "SUMMARY",
-        "scores": {tid: round(s, 4) for tid, s in scores.items()},
-        "average": round(avg, 4),
-    }))
+    print(
+        f"[SUMMARY] average={avg:.4f} "
+        + " ".join(f"{tid}={s:.4f}" for tid, s in scores.items()),
+        flush=True,
+    )
 
 
 if __name__ == "__main__":
