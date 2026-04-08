@@ -39,7 +39,8 @@ def _grade(
     frust_penalty = -0.15 if final_obs.frustration >= FRUSTRATION_THRESHOLD else 0.0
 
     score = base_score * 0.75 + target_bonus + early_bonus + frust_penalty
-    return round(max(0.0, min(1.0, score)), 4)
+    # Clamp strictly within (0, 1) — OpenEnv rejects exact 0.0 and 1.0
+    return round(max(0.0001, min(0.9999, score)), 4)
 
 
 TASK = Task(

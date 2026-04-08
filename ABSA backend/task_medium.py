@@ -38,4 +38,5 @@ def run_and_grade(agent_fn, personality="balanced", seed=42):
     frustration_score = 0.20 if avg_frustration <= FRUSTRATION_LIMIT else max(0.0, 0.20 - (avg_frustration - FRUSTRATION_LIMIT) * 0.5)
     consistency_score = 0.10 if streak_resets == 0 else max(0.0, 0.10 - streak_resets * 0.04)
 
-    return round(max(0.0, min(1.0, streak_score + frustration_score + consistency_score)), 4)
+    # Clamp strictly within (0, 1) — OpenEnv rejects exact 0.0 and 1.0
+    return round(max(0.0001, min(0.9999, streak_score + frustration_score + consistency_score)), 4)

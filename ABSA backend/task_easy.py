@@ -39,4 +39,5 @@ def run_and_grade(agent_fn, personality="balanced", seed=42):
     early_bonus = 0.05 * (MAX_STEPS - steps_taken) / MAX_STEPS if final_screen_time <= TARGET_SCREEN_TIME else 0.0
     frustration_penalty = -0.15 if frustration_penalised else 0.0
 
-    return round(max(0.0, min(1.0, base_score + target_hit_bonus + early_bonus + frustration_penalty)), 4)
+    # Clamp strictly within (0, 1) — OpenEnv rejects exact 0.0 and 1.0
+    return round(max(0.0001, min(0.9999, base_score + target_hit_bonus + early_bonus + frustration_penalty)), 4)

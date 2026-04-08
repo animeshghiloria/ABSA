@@ -38,7 +38,8 @@ def _grade(
     consistency_score = min(0.10, addiction_improvement * 0.5)
 
     score = streak_score + frustration_score + consistency_score
-    return round(max(0.0, min(1.0, score)), 4)
+    # Clamp strictly within (0, 1) — OpenEnv rejects exact 0.0 and 1.0
+    return round(max(0.0001, min(0.9999, score)), 4)
 
 
 TASK = Task(
