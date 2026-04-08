@@ -9,16 +9,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Python deps
-COPY "ABSA backend/requirements.txt" .
+COPY ["ABSA backend/requirements.txt", "."]
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend source
-COPY "ABSA backend/env/"       ./env/
-COPY "ABSA backend/tasks/"     ./tasks/
-COPY "ABSA backend/server.py"  .
-COPY "ABSA backend/openenv.yaml" .
+# Copy backend source (JSON form needed for paths with spaces)
+COPY ["ABSA backend/env/", "./env/"]
+COPY ["ABSA backend/tasks/", "./tasks/"]
+COPY ["ABSA backend/server.py", "."]
+COPY ["ABSA backend/openenv.yaml", "."]
 
-# Copy inference.py from repo root (where OpenEnv expects it)
+# Copy inference.py from repo root
 COPY inference.py .
 
 # HF Spaces uses port 7860
