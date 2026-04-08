@@ -49,6 +49,10 @@ class GradeRequest(BaseModel):
     step_count: int
 
 
+class StepActionOnly(BaseModel):
+    action_type: str
+
+
 # ---------------------------------------------------------------------------
 # App-level state
 # ---------------------------------------------------------------------------
@@ -85,8 +89,10 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 
 @app.post("/reset")
-def reset(req: ResetRequest):
+def reset(req: Optional[ResetRequest] = None):
     global _env, _initial_obs
+    if req is None:
+        req = ResetRequest()
     valid_tasks = list(TASK_REGISTRY.keys())
     if req.task_id not in valid_tasks:
         raise HTTPException(422, f"Unknown task_id '{req.task_id}'. Valid: {valid_tasks}")

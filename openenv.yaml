@@ -1,0 +1,40 @@
+name: adaptive-behavior-shaping-agent
+version: "1.0.0"
+description: >
+  RL environment where an agent reduces digital addiction and builds
+  sustainable health habits by interacting with a simulated human user.
+
+tags: [openenv, reinforcement-learning, health, behavior-change, multi-objective]
+
+observation_space:
+  screen_time:       {type: number, range: [0, 12]}
+  focus_level:       {type: number, range: [0, 1]}
+  energy:            {type: number, range: [0, 1]}
+  habit_streak:      {type: integer, range: [0, 30]}
+  addiction_score:   {type: number, range: [0, 1]}
+  frustration:       {type: number, range: [0, 1]}
+  time_of_day:       {type: string, enum: [morning, afternoon, evening, night]}
+  motivation:        {type: number, range: [0, 1]}
+  fatigue:           {type: number, range: [0, 1]}
+  step:              {type: integer}
+  last_action_complied: {type: boolean, nullable: true}
+
+action_space:
+  type: string
+  enum: [delay_notification, block_app, suggest_workout, suggest_break, suggest_sleep, noop]
+
+tasks:
+  - {id: screen_time_reducer,  difficulty: easy,   max_steps: 10}
+  - {id: habit_streak_builder, difficulty: medium, max_steps: 15}
+  - {id: full_absa,            difficulty: hard,   max_steps: 20}
+
+endpoints:
+  reset:  POST /reset
+  step:   POST /step
+  state:  GET  /state
+  grade:  POST /grade
+  health: GET  /health
+
+reward_range:  [-15.0, 26.0]
+score_range:   [0.0, 1.0]
+port: 7860
