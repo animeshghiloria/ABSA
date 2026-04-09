@@ -7,9 +7,8 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'ABSA Dashboard',
-  description: 'Adaptive Behavior Shaping Agent - Intelligent behavior monitoring and guidance',
-  generator: 'v0.app',
+  title: 'ABSA — Adaptive Behavior Shaping Agent',
+  description: 'RL environment for training AI agents that act as digital wellness coaches — reducing screen addiction and building healthy habits.',
   icons: {
     icon: [
       {

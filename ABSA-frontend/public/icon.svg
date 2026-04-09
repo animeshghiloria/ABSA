@@ -1,26 +1,43 @@
-<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <style>
-    @media (prefers-color-scheme: light) {
-      .background { fill: black; }
-      .foreground { fill: white; }
-    }
-    @media (prefers-color-scheme: dark) {
-      .background { fill: white; }
-      .foreground { fill: black; }
-    }
-  </style>
-  <g clip-path="url(#clip0_7960_43945)">
-    <rect class="background" width="180" height="180" rx="37" />
-    <g style="transform: scale(95%); transform-origin: center">
-      <path class="foreground"
-        d="M101.141 53H136.632C151.023 53 162.689 64.6662 162.689 79.0573V112.904H148.112V79.0573C148.112 78.7105 148.098 78.3662 148.072 78.0251L112.581 112.898C112.701 112.902 112.821 112.904 112.941 112.904H148.112V126.672H112.941C98.5504 126.672 86.5638 114.891 86.5638 100.5V66.7434H101.141V100.5C101.141 101.15 101.191 101.792 101.289 102.422L137.56 66.7816C137.255 66.7563 136.945 66.7434 136.632 66.7434H101.141V53Z" />
-      <path class="foreground"
-        d="M65.2926 124.136L14 66.7372H34.6355L64.7495 100.436V66.7372H80.1365V118.47C80.1365 126.278 70.4953 129.958 65.2926 124.136Z" />
-    </g>
-  </g>
-  <defs>
-    <clipPath id="clip0_7960_43945">
-      <rect width="180" height="180" fill="white" />
-    </clipPath>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <rect width="32" height="32" rx="6" fill="#0f0f1a"/>
+
+  <!-- Neural network nodes -->
+  <!-- Left lobe top arc -->
+  <circle cx="8" cy="10" r="1.5" fill="#a855f7"/>
+  <circle cx="13" cy="7" r="1.5" fill="#8b5cf6"/>
+  <circle cx="10" cy="15" r="1.5" fill="#a855f7"/>
+
+  <!-- Right lobe top arc -->
+  <circle cx="19" cy="7" r="1.5" fill="#8b5cf6"/>
+  <circle cx="24" cy="10" r="1.5" fill="#6366f1"/>
+  <circle cx="22" cy="15" r="1.5" fill="#6366f1"/>
+
+  <!-- Center / mid nodes -->
+  <circle cx="16" cy="9" r="1.5" fill="#c084fc"/>
+  <circle cx="16" cy="16" r="2" fill="#a855f7"/>
+
+  <!-- Lower nodes -->
+  <circle cx="11" cy="21" r="1.5" fill="#7c3aed"/>
+  <circle cx="16" cy="23" r="1.5" fill="#8b5cf6"/>
+  <circle cx="21" cy="21" r="1.5" fill="#6366f1"/>
+
+  <!-- Connections -->
+  <line x1="8"  y1="10" x2="13" y2="7"  stroke="#a855f7" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="13" y1="7"  x2="16" y2="9"  stroke="#c084fc" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="16" y1="9"  x2="19" y2="7"  stroke="#c084fc" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="19" y1="7"  x2="24" y2="10" stroke="#6366f1" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="8"  y1="10" x2="10" y2="15" stroke="#a855f7" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="24" y1="10" x2="22" y2="15" stroke="#6366f1" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="10" y1="15" x2="16" y2="16" stroke="#a855f7" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="22" y1="15" x2="16" y2="16" stroke="#6366f1" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="16" y1="16" x2="11" y2="21" stroke="#8b5cf6" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="16" y1="16" x2="16" y2="23" stroke="#a855f7" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="16" y1="16" x2="21" y2="21" stroke="#6366f1" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="13" y1="7"  x2="10" y2="15" stroke="#8b5cf6" stroke-width="0.6" stroke-opacity="0.4"/>
+  <line x1="19" y1="7"  x2="22" y2="15" stroke="#6366f1" stroke-width="0.6" stroke-opacity="0.4"/>
+  <line x1="11" y1="21" x2="16" y2="23" stroke="#8b5cf6" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="21" y1="21" x2="16" y2="23" stroke="#6366f1" stroke-width="0.8" stroke-opacity="0.6"/>
+
+  <!-- Glow on center node -->
+  <circle cx="16" cy="16" r="3.5" fill="#a855f7" fill-opacity="0.15"/>
 </svg>
