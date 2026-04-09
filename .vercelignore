@@ -1,0 +1,15 @@
+# Python backend — not deployed to Vercel
+ABSA backend/
+server/
+inference.py
+Dockerfile
+openenv.yaml
+pyproject.toml
+uv.lock
+.venv/
+__pycache__/
+*.py
+*.pyc
+
+# Misc
+README.md
